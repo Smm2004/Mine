@@ -2,6 +2,7 @@ package Service;
 
 import Entity.Course;
 import Entity.Student;
+import GlobalHandler.StudentNotFound;
 import Repository.Student_Repository;
 import java.util.List;
 
@@ -20,7 +21,11 @@ public class StudentService {
     }
 
     public Student viewStudent(int Nid){
-        return student_repository.findByN_ID(Nid);
+        Student student = student_repository.findByN_ID(Nid);
+        if(student == null) {
+            throw new StudentNotFound("Student with ID: " + Nid + "not found");
+        }
+        return student;
     }
 
 }

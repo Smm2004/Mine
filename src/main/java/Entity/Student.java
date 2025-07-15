@@ -74,6 +74,7 @@ public class Student{
             }
         }
         return num;
+
     }
 
     public void SetEmail(String email){

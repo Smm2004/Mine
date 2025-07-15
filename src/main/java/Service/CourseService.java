@@ -2,8 +2,11 @@ package Service;
 
 import Entity.Course;
 import Entity.Student;
+import GlobalHandler.CourseNotFound;
 import Repository.Course_Repository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+
 import java.util.List;
 
 @Service
@@ -22,7 +25,21 @@ public class CourseService {
     };
 
     public Course View_Course(long id, String name) {
-        return course_repository.findByCourseIdandCourseName(id, name);
+        Course course = course_repository.findByCourseIdandCourseName(id, name);
+        if(course == null) {
+            throw new CourseNotFound("Course: " + name +  "not found");
+        }
+        return course;
+    }
+
+    @Scheduled(cron =  "0 0 0 * * *")
+    public void UpdateCourseStatus(){
+        List<Course> courses = course_repository.findAll();
+
+        for(Course course : courses){
+            course.SetAutoStatus();
+            course_repository.save(course);
+        }
     }
 
     public void Soft_Delete_Course(long id, String name) {
