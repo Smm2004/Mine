@@ -1,6 +1,6 @@
-package DTO;
+package com.smm.course_registration.DTO;
 
-import Entity.Student;
+import com.smm.course_registration.Entity.Student;
 
 public class CourseRegistrationDTO {
 

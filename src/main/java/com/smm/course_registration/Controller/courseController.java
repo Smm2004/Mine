@@ -1,22 +1,21 @@
-package Controller;
+package com.smm.course_registration.Controller;
 
-import DTO.CourseRegistrationDTO;
-import Entity.Course;
-import Entity.Student;
-import Service.CourseService;
-import Service.EmailService;
+import com.smm.course_registration.DTO.CourseRegistrationDTO;
+import com.smm.course_registration.Entity.Course;
+import com.smm.course_registration.Services.courseService;
+import com.smm.course_registration.Services.emailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/Courses")
-public class CourseController {
+public class courseController {
 
-    CourseService courseservice;
-    EmailService emailservice;
+    courseService courseservice;
+    emailService emailservice;
     @Autowired
-    public CourseController(CourseService courseservice,  EmailService emailservice) {
+    public courseController(courseService courseservice, emailService emailservice) {
         this.courseservice = courseservice;
         this.emailservice = emailservice;
     }

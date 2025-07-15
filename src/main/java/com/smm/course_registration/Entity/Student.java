@@ -1,4 +1,4 @@
-package Entity;
+package com.smm.course_registration.Entity;
 
 import jakarta.persistence.*;
 
@@ -6,70 +6,70 @@ import java.util.List;
 
 @Entity
 public class Student{
-    private long N_ID;
+    private long NID;
     private String Name;
     private String Email;
-    private String PersonalPic;
+    private String personalPic;
     //String used as placeholder for object that will be used when I discover what to use
     private String Level;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Student_ID;
+    private long student_Id;
 
     @ManyToMany
     @JoinTable(
             name = "Student_Course_Table",
-            joinColumns = @JoinColumn(name = "Student_ID"),
-            inverseJoinColumns = @JoinColumn(name = "Course_ID"))
+            joinColumns = @JoinColumn(name = "studentID"),
+            inverseJoinColumns = @JoinColumn(name = "courseID"))
     private List<Course> Course;
 
     public Student(){};
 
     public Student(long N_ID, String Name, String email, String PersonalPic, String Level){
-        this.N_ID = N_ID;
+        this.NID = N_ID;
         this.Name = Name;
         this.Email = email;
-        this.PersonalPic = PersonalPic;
+        this.personalPic = PersonalPic;
         this.Level = Level;
     }
 
-    public void SetN_ID(long id){
-        this.N_ID = id;
+    public void setNID(long id){
+        this.NID = id;
     }
-    public long GetN_ID(){
-        return N_ID;
+    public long getNID(){
+        return NID;
     }
 
-    public void SetName(String name){
+    public void setName(String name){
         this.Name = name;
     }
-    public String GetName(){
+    public String getName(){
         return Name;
     }
 
-    public void SetPersonalPic(String pp){
-        this.PersonalPic = pp;
+    public void setpersonalPic(String pp){
+        this.personalPic = pp;
     }
-    public String GetPersonalPic(){
-        return PersonalPic;
+    public String getpersonalPic(){
+        return personalPic;
     }
 
-    public void SetLevel(String level){
+    public void setLevel(String level){
         this.Level = level;
     }
-    public String GetLevel(){
+    public String getLevel(){
         return Level;
     }
 
-    public void SetCourse(Course course){
+    public void setCourse(Course course){
         Course.add(course);
     }
 
-    public int GetCourseCount(){
+    public int getCourseCount(){
         int num = 0;
         for(Course c : Course){
-            if(c.GetStatus() == "Open"){
+            if(c.getStatus() == "Open"){
                 num++;
             }
         }
@@ -77,8 +77,8 @@ public class Student{
 
     }
 
-    public void SetEmail(String email){
+    public void setEmail(String email){
         this.Email = email;
     }
-    public String GetEmail(){return this.Email;}
+    public String getEmail(){return this.Email;}
 }

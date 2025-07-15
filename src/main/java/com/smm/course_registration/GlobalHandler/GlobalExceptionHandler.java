@@ -1,4 +1,4 @@
-package GlobalHandler;
+package com.smm.course_registration.GlobalHandler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

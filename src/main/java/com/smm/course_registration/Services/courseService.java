@@ -1,19 +1,19 @@
-package Service;
+package com.smm.course_registration.Services;
 
-import Entity.Course;
-import Entity.Student;
-import GlobalHandler.CourseNotFound;
-import Repository.Course_Repository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.smm.course_registration.Entity.Course;
+import com.smm.course_registration.Entity.Student;
+import com.smm.course_registration.GlobalHandler.CourseNotFound;
+import com.smm.course_registration.Repository.course_Repository;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CourseService {
-    Course_Repository course_repository;
+public class courseService {
+    course_Repository course_repository;
 
-    public CourseService(Course_Repository course_repository) {};
+    public courseService(course_Repository course_repository) {};
 
 
     public Course Define_Course(Course course) {
@@ -25,7 +25,7 @@ public class CourseService {
     };
 
     public Course View_Course(long id, String name) {
-        Course course = course_repository.findByCourseIdandCourseName(id, name);
+        Course course = course_repository.findByCourseIdAndCourseName(id, name);
         if(course == null) {
             throw new CourseNotFound("Course: " + name +  "not found");
         }
@@ -37,22 +37,22 @@ public class CourseService {
         List<Course> courses = course_repository.findAll();
 
         for(Course course : courses){
-            course.SetAutoStatus();
+            course.setAutoStatus();
             course_repository.save(course);
         }
     }
 
     public void Soft_Delete_Course(long id, String name) {
-        Course course= course_repository.findByCourseIdandCourseName(id, name);
-        course.SetStatus("Deleted");
+        Course course= course_repository.findByCourseIdAndCourseName(id, name);
+        course.setStatus("Deleted");
         course_repository.save(course);
     }
 
     public void Register_For_Course(long id, String name, Student student) {
-        Course course = course_repository.findByCourseIdandCourseName(id, name);
-        if(student.GetCourseCount() <= 3) {
-            course.SetStudent(student);
-            student.SetCourse(course);
+        Course course = course_repository.findByCourseIdAndCourseName(id, name);
+        if(student.getCourseCount() <= 3) {
+            course.setStudent(student);
+            student.setCourse(course);
         }
 
     }

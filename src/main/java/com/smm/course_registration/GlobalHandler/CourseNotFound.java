@@ -1,4 +1,4 @@
-package GlobalHandler;
+package com.smm.course_registration.GlobalHandler;
 
 public class CourseNotFound extends RuntimeException{
 

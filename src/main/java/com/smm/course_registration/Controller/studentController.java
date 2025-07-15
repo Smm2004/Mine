@@ -1,9 +1,7 @@
-package Controller;
+package com.smm.course_registration.Controller;
 
-import Entity.Student;
-import Repository.Student_Repository;
-import Service.EmailService;
-import Service.StudentService;
+import com.smm.course_registration.Entity.Student;
+import com.smm.course_registration.Services.studentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,12 +9,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/Student")
-public class StudentController {
+public class studentController {
 
-    StudentService studentservice;
+    studentService studentservice;
 
     @Autowired
-    public StudentController(StudentService studentservice) {
+    public studentController(studentService studentservice) {
         this.studentservice = studentservice;
     }
 
