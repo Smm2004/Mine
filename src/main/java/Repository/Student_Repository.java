@@ -9,8 +9,9 @@ import java.util.List;
 @Repository
 public interface Student_Repository extends JpaRepository<Student,Integer> {
 
-    List<Student> findAll();
-    List<Student> findStudentByN_ID(Integer N_ID);
-    List<Student> findStudentByName(String Name);
-    List<Student> findStudentByCourseID(long CourseID);
+    Student findByN_ID(Integer N_ID);
+    List<Student> findByName(String Name);
+    List<Student> findByLevel(String Level);
+    List<Student> findByNameAndN_ID(String Name,Integer N_ID);
+
 }

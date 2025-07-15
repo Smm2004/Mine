@@ -8,6 +8,7 @@ import java.util.List;
 public class Student{
     private long N_ID;
     private String Name;
+    private String Email;
     private String PersonalPic;
     //String used as placeholder for object that will be used when I discover what to use
     private String Level;
@@ -18,45 +19,65 @@ public class Student{
 
     @ManyToMany
     @JoinTable(
-            name = "Student_Table",
-            joinColumns = @JoinColumns(name = 'Student_ID'),
-            inverseJoinColumns = @JoinColumns(name = 'Course_ID'))
+            name = "Student_Course_Table",
+            joinColumns = @JoinColumn(name = "Student_ID"),
+            inverseJoinColumns = @JoinColumn(name = "Course_ID"))
     private List<Course> Course;
 
     public Student(){};
 
-    public Student(long N_ID, String Name, String PersonalPic, String Level){
+    public Student(long N_ID, String Name, String email, String PersonalPic, String Level){
         this.N_ID = N_ID;
         this.Name = Name;
+        this.Email = email;
         this.PersonalPic = PersonalPic;
         this.Level = Level;
     }
 
-    protected void SetN_ID(long id){
+    public void SetN_ID(long id){
         this.N_ID = id;
     }
-    protected long GetN_ID(){
+    public long GetN_ID(){
         return N_ID;
     }
 
-    protected void SetName(String name){
+    public void SetName(String name){
         this.Name = name;
     }
-    protected String GetName(){
+    public String GetName(){
         return Name;
     }
 
-    protected void SetPersonalPic(String pp){
+    public void SetPersonalPic(String pp){
         this.PersonalPic = pp;
     }
-    protected String GetPersonalPic(){
+    public String GetPersonalPic(){
         return PersonalPic;
     }
 
-    protected void SetLevel(String level){
+    public void SetLevel(String level){
         this.Level = level;
     }
-    protected String GetLevel(){
+    public String GetLevel(){
         return Level;
     }
+
+    public void SetCourse(Course course){
+        Course.add(course);
+    }
+
+    public int GetCourseCount(){
+        int num = 0;
+        for(Course c : Course){
+            if(c.GetStatus() == "Open"){
+                num++;
+            }
+        }
+        return num;
+    }
+
+    public void SetEmail(String email){
+        this.Email = email;
+    }
+    public String GetEmail(){return this.Email;}
 }
