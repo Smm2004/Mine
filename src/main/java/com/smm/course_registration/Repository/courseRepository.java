@@ -8,9 +8,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface course_Repository extends JpaRepository<Course,Integer> {
+public interface courseRepository extends JpaRepository<Course,Integer> {
     List<Course> findByCourseName(String courseName);
-    List<Course> findByCourseId(long course_Id);
+    Course findByCourseId(long course_Id);
     List<Course> findByStartDateAndEndDate(LocalDate startDate, LocalDate endDate);
     List<Course> findByCourseType(String courseType);
     List<Course> findByInstructorName(String instructorName);

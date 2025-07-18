@@ -2,8 +2,10 @@ package com.smm.course_registration.Services;
 
 import com.smm.course_registration.Entity.Student;
 import com.smm.course_registration.GlobalHandler.StudentNotFound;
-import com.smm.course_registration.Repository.student_Repository;
+import com.smm.course_registration.Repository.studentRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -11,9 +13,9 @@ import java.util.List;
 @Service
 public class studentService {
 
-    student_Repository student_repository;
+    studentRepository student_repository;
 
-    public studentService(student_Repository student_repository) {
+    public studentService(studentRepository student_repository) {
         this.student_repository = student_repository;
     };
 
@@ -21,8 +23,9 @@ public class studentService {
         return student_repository.findAll();
     }
 
-    public Student viewStudent(int Nid){
-        Student student = student_repository.findByNID(Nid);
+    @Transactional
+    public Student viewStudent(long Nid){
+        Student student = student_repository.findByNId(Nid).orElseThrow(() -> new EntityNotFoundException("Student with NID " + Nid + " not found."));;
         if(student == null) {
             throw new StudentNotFound("Student with ID: " + Nid + "not found");
         }

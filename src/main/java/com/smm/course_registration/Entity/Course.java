@@ -1,16 +1,16 @@
 package com.smm.course_registration.Entity;
 
+import com.smm.course_registration.Entity.audit.Auditable;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Where(clause = "status = 'Open'")
-public class Course{
+public class Course extends Auditable {
     private String courseName;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -29,14 +29,9 @@ public class Course{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long courseId;
 
-    @ManyToMany
-    @JoinTable(
-            name = "Course_Student_Table",
-            joinColumns = @JoinColumn(name = "Course_ID"),
-            inverseJoinColumns = @JoinColumn(name = "Student_ID"))
-    private List<Student> students;
+    @ManyToMany(mappedBy = "courses",fetch = FetchType.EAGER)
+    private List<Student> students =  new ArrayList<>();
 
-    private LocalDate today = LocalDate.now();
 
     public Course(){};
 
@@ -47,8 +42,6 @@ public class Course{
         this.courseType = CourseType;
         this.instructorName = InstructorName;
         this.setAutoStatus();
-
-
     }
     public void setCourseName(String name){
         this.courseName = name;
@@ -85,7 +78,15 @@ public class Course{
         return instructorName;
     }
 
+    public void setCourseId(long id){
+        this.courseId = id;
+    }
+    public long getCourseId(){
+        return courseId;
+    }
+
     public void setAutoStatus(){
+        LocalDate today = LocalDate.now();
         if(today.isBefore(startDate)){
             this.status = "Not Open Yet";
         }
@@ -105,6 +106,9 @@ public class Course{
 
     public void setStudent(Student student){
         this.students.add(student);
+    }
+    public List<Student> getStudents(){
+        return students;
     }
 }
 

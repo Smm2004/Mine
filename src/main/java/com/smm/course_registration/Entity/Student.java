@@ -1,51 +1,54 @@
 package com.smm.course_registration.Entity;
 
+import com.smm.course_registration.Entity.audit.Auditable;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Student{
-    private long NID;
-    private String Name;
-    private String Email;
+public class Student extends Auditable {
+
+    @Column(unique = true, nullable = false)
+    private long nId;
+    private String name;
+    private String email;
     private String personalPic;
     //String used as placeholder for object that will be used when I discover what to use
-    private String Level;
+    private String level;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long student_Id;
+    private long studentId;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "Student_Course_Table",
-            joinColumns = @JoinColumn(name = "studentID"),
-            inverseJoinColumns = @JoinColumn(name = "courseID"))
-    private List<Course> Course;
+            joinColumns = @JoinColumn(name = "studentId"),
+            inverseJoinColumns = @JoinColumn(name = "courseId"))
+    private List<Course> courses =  new ArrayList<>();
 
     public Student(){};
 
     public Student(long N_ID, String Name, String email, String PersonalPic, String Level){
-        this.NID = N_ID;
-        this.Name = Name;
-        this.Email = email;
+        this.nId = N_ID;
+        this.name = Name;
+        this.email = email;
         this.personalPic = PersonalPic;
-        this.Level = Level;
+        this.level = Level;
     }
 
-    public void setNID(long id){
-        this.NID = id;
+    public void setNID(long id){this.nId = id;
     }
     public long getNID(){
-        return NID;
+        return nId;
     }
 
     public void setName(String name){
-        this.Name = name;
+        this.name = name;
     }
     public String getName(){
-        return Name;
+        return name;
     }
 
     public void setpersonalPic(String pp){
@@ -56,29 +59,32 @@ public class Student{
     }
 
     public void setLevel(String level){
-        this.Level = level;
+        this.level = level;
     }
     public String getLevel(){
-        return Level;
+        return level;
     }
 
     public void setCourse(Course course){
-        Course.add(course);
+        courses.add(course);
     }
+    public List<Course> getCourses(){
+            return courses;
+}
 
-    public int getCourseCount(){
-        int num = 0;
-        for(Course c : Course){
-            if(c.getStatus() == "Open"){
-                num++;
-            }
+
+    public int getCourseCount() {
+        if (this.courses == null) {
+            return 0;
         }
-        return num;
 
+        return (int) this.courses.stream()
+                .filter(course -> course.getStatus() != null && "Open".equals(course.getStatus()))
+                .count();
     }
 
     public void setEmail(String email){
-        this.Email = email;
+        this.email = email;
     }
-    public String getEmail(){return this.Email;}
+    public String getEmail(){return this.email;}
 }

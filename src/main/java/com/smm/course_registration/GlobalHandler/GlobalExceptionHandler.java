@@ -19,6 +19,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleStudentNotFound(StudentNotFound ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
-
+//The
 
 }

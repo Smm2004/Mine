@@ -6,7 +6,7 @@ public class CourseRegistrationDTO {
 
     private long id;
     private String name;
-    private Student student;
+    private long nId;
 
 
     public long getId() {
@@ -25,12 +25,11 @@ public class CourseRegistrationDTO {
         this.name = name;
     }
 
-    public Student getStudent() {
-        return student;
+    public long getNId() {
+        return nId;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setNId(long id) {this.nId = id;
     }
 
 }
