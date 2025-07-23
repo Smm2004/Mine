@@ -1,5 +1,6 @@
 package com.smm.course_registration.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.smm.course_registration.Entity.audit.Auditable;
 import jakarta.persistence.*;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public class Student extends Auditable {
 
     @Column(unique = true, nullable = false)
-    private long nId;
+    private Long nId;
     private String name;
     private String email;
     private String personalPic;
@@ -19,13 +20,14 @@ public class Student extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long studentId;
+    private Long studentId;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "Student_Course_Table",
-            joinColumns = @JoinColumn(name = "studentId"),
-            inverseJoinColumns = @JoinColumn(name = "courseId"))
+            name = "student_courses",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    @JsonManagedReference("course-students")
     private List<Course> courses =  new ArrayList<>();
 
     public Student(){};
@@ -38,9 +40,9 @@ public class Student extends Auditable {
         this.level = Level;
     }
 
-    public void setNID(long id){this.nId = id;
+    public void setNID(Long id){this.nId = id;
     }
-    public long getNID(){
+    public Long getNID(){
         return nId;
     }
 
@@ -51,10 +53,10 @@ public class Student extends Auditable {
         return name;
     }
 
-    public void setpersonalPic(String pp){
+    public void setPersonalPic(String pp){
         this.personalPic = pp;
     }
-    public String getpersonalPic(){
+    public String getPersonalPic(){
         return personalPic;
     }
 
@@ -65,8 +67,11 @@ public class Student extends Auditable {
         return level;
     }
 
-    public void setCourse(Course course){
-        courses.add(course);
+
+    public void addCourse(Course course){
+        if (!this.courses.contains(course)) {
+            this.courses.add(course);
+        }
     }
     public List<Course> getCourses(){
             return courses;
@@ -79,7 +84,7 @@ public class Student extends Auditable {
         }
 
         return (int) this.courses.stream()
-                .filter(course -> course.getStatus() != null && "Open".equals(course.getStatus()))
+                .filter(course -> course.getStatus() != null && "open".equals(course.getStatus()))
                 .count();
     }
 

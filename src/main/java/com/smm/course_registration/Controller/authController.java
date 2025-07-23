@@ -5,12 +5,14 @@ import com.smm.course_registration.DTO.uRegisterDTO;
 import com.smm.course_registration.Entity.User;
 import com.smm.course_registration.Repository.userRepository;
 import com.smm.course_registration.Services.userDetailsService;
+import com.smm.course_registration.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,11 +27,15 @@ public class authController {
     userRepository userRepository;
     AuthenticationManager authenticationManager;
     PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final userDetailsService userDetailsService;
 
-    public authController(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder,  userRepository userRepository) {
+    public authController(AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, userRepository userRepository, JwtUtil jwtUtil, userDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping("/register")
@@ -52,16 +58,30 @@ public class authController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody uLoginDTO request) {
+    public ResponseEntity<?> login(@RequestBody uLoginDTO request) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
-            return ResponseEntity.ok("Login successful for user: " + authentication.getName());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            final String jwt = jwtUtil.generateToken(userDetails);
+            return ResponseEntity.ok(new AuthenticationResponse(jwt));
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401).body("Invalid username or password");
+        }
+    }
+
+    static class AuthenticationResponse {
+        private final String jwt;
+        public AuthenticationResponse(String jwt) {
+            this.jwt = jwt;
+        }
+        public String getJwt() {
+            return jwt;
         }
     }
 }

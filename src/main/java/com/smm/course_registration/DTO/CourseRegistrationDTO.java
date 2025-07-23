@@ -1,11 +1,12 @@
 package com.smm.course_registration.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smm.course_registration.Entity.Student;
 
 public class CourseRegistrationDTO {
 
     private long id;
-    private String name;
+    @JsonProperty("nId")
     private long nId;
 
 
@@ -15,14 +16,6 @@ public class CourseRegistrationDTO {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public long getNId() {

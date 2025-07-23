@@ -22,11 +22,11 @@ public class emailService {
     };
 
     @Transactional
-    public void SendEmail(Long id, String name, Student student) {
+    public void SendEmail(Long id, Student student) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        Course course = course_repository.findByCourseIdAndCourseName(id, name);
-        String body = "Congratulations " + student.getName() + "! You have succesfully registered in " + name;
+        Course course = course_repository.findByCourseId(id);
+        String body = "Congratulations " + student.getName() + "! You have succesfully registered";
         message.setFrom("marghalani.siraj@gmail.com");
         message.setTo(student.getEmail());
         message.setCc(course.getInstructorName().trim() + "@gmail.com");

@@ -8,22 +8,22 @@ import org.hibernate.annotations.ValueGenerationType;
 import java.util.Set;
 
 @Entity
-@Table(name = "\"User\"")
+@Table(name = "\"user\"")
 public class User extends Auditable {
 
     private String username;
     private String password;
     private String role;
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
 
 
-
     public User(){}
 
-    public User(String userName, String password){
+    public User(String userName, String password, String role) {
         this.username = userName;
         this.password = password;
     }
@@ -49,5 +49,7 @@ public class User extends Auditable {
     public void setRole(String role){
         this.role = role;
     }
+
+
 
 }

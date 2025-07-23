@@ -1,0 +1,179 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: SMM
+      changes:
+        - createTable:
+            tableName: "user"
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: updated_by
+                  type: VARCHAR(255)
+
+        - createTable:
+            tableName: student
+            columns:
+              - column:
+                  name: student_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: n_id # National ID
+                  type: BIGINT
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: level
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email # Assuming email is also stored here for convenience/email service
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+              - column:
+                  name: course_count
+                  type: INT
+                  defaultValue: 0
+              - column:
+                  name: personal_pic
+                  type: VARCHAR(255) # Assuming path to pic
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: updated_by
+                  type: VARCHAR(255)
+
+        - createTable:
+            tableName: course
+            columns:
+              - column:
+                  name: course_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: course_name
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true # Course names should probably be unique
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  defaultValue: 'open' # For soft delete
+
+              - column:
+                  name: course_type
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: instructor_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: start_date
+                  type: DATETIME
+
+              - column:
+                    name: end_date
+                    type: DATETIME
+
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: created_by
+                  type: VARCHAR(255)
+              - column:
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: updated_by
+                  type: VARCHAR(255)
+
+        # Many-to-Many Join Table (Student_Courses)
+        - createTable:
+            tableName: student_courses
+            columns:
+              - column:
+                  name: student_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: course_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            columnNames: student_id, course_id
+            constraintName: pk_student_courses
+            tableName: student_courses
+        - addForeignKeyConstraint:
+            baseColumnNames: student_id
+            baseTableName: student_courses
+            constraintName: fk_student_courses_student
+            referencedColumnNames: student_id
+            referencedTableName: student
+        - addForeignKeyConstraint:
+            baseColumnNames: course_id
+            baseTableName: student_courses
+            constraintName: fk_student_courses_course
+            referencedColumnNames: course_id
+            referencedTableName: course

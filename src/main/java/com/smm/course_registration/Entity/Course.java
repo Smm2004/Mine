@@ -1,5 +1,8 @@
 package com.smm.course_registration.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.smm.course_registration.Entity.audit.Auditable;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@JsonIgnoreProperties(value = {"students"}, allowSetters = false)
 public class Course extends Auditable {
     private String courseName;
     private LocalDate startDate;
@@ -18,18 +22,18 @@ public class Course extends Auditable {
     private String instructorName;
     private String status;
     /** Course can be:
-     *  1. Not Open yet
-     *	2. Open
-     *	3. Full
-     *	4. Deleted
-     *	5. Closed
+     *	1. Open
+     *	2. Deleted
+     *	3. Closed
      **/
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long courseId;
+    private Long courseId;
 
     @ManyToMany(mappedBy = "courses",fetch = FetchType.EAGER)
+    @JsonBackReference("course-students")
+    @JsonIgnore
     private List<Student> students =  new ArrayList<>();
 
 
@@ -41,7 +45,6 @@ public class Course extends Auditable {
         this.endDate = EndDate;
         this.courseType = CourseType;
         this.instructorName = InstructorName;
-        this.setAutoStatus();
     }
     public void setCourseName(String name){
         this.courseName = name;
@@ -87,15 +90,10 @@ public class Course extends Auditable {
 
     public void setAutoStatus(){
         LocalDate today = LocalDate.now();
-        if(today.isBefore(startDate)){
-            this.status = "Not Open Yet";
-        }
-        if(today.isAfter(startDate) && today.isBefore(endDate)){
-            this.status = "Open";
-        }
-        if(today.isAfter(endDate)){
+        if(today.isAfter(startDate)){
             this.status = "Closed";
         }
+
     }
     public void setStatus(String status){
         this.status = status;
@@ -104,12 +102,19 @@ public class Course extends Auditable {
         return status;
     }
 
-    public void setStudent(Student student){
-        this.students.add(student);
+    public void addStudent(Student student){
+        if (!this.students.contains(student)) {
+            this.students.add(student);
+        }
     }
     public List<Student> getStudents(){
         return students;
     }
+
+    public int getStudentCount(){
+        if(students == null)
+            return 0;
+
+        return students.size();
+    }
 }
-
-
