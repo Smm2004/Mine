@@ -31,4 +31,4 @@ jobs:
         run: docker build -t smm2004/springboot-app .
 
       - name: Push Docker image
-        run: docker push dckr_pat_w7YKl4r6hNC-Ap2vGFrlzztFza8/springboot-app
+        run: docker push smm2004/springboot-app
