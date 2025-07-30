@@ -12,11 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.ErrorManager;
 
 
 @Service
@@ -25,42 +29,47 @@ public class studentService {
     studentRepository student_repository;
     userRepository user_repository;
     PasswordEncoder passwordEncoder;
+    FileStorageService fileStorageService;
 
-    public studentService(studentRepository student_repository, userRepository user_repository,PasswordEncoder passwordEncoder) {
-
+    public studentService(studentRepository student_repository, userRepository user_repository,PasswordEncoder passwordEncoder, FileStorageService fileStorageService) {
         this.student_repository = student_repository;
         this.user_repository = user_repository;
         this.passwordEncoder = passwordEncoder;
+        this.fileStorageService = fileStorageService;
     };
 
     @Transactional
-    public Student registerStudent(StudentRegistrationDTO registrationDTO) {
-        if (user_repository.findByUsername(registrationDTO.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("User with this email already exists.");
+    public void registerStudent(StudentRegistrationDTO registrationDTO, MultipartFile file) {
+        try{
+            if (user_repository.findByUsername(registrationDTO.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("User with this email already exists.");
+            }
+
+            if (student_repository.findByNId(registrationDTO.getnId()).isPresent()) {
+                throw new IllegalArgumentException("Student with this National ID already exists.");
+            }
+
+            if (student_repository.findByEmail(registrationDTO.getEmail()).isPresent()) {
+                throw new IllegalArgumentException("Student with this email already exists.");
+            }
+
+            User newUser = new User();
+            newUser.setUsername(registrationDTO.getEmail());
+            newUser.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
+            newUser.setRole("ROLE_STUDENT");
+            user_repository.save(newUser);
+
+            Student newStudent = new Student();
+            newStudent.setName(registrationDTO.getName());
+            newStudent.setLevel(registrationDTO.getLevel());
+            newStudent.setNID(registrationDTO.getnId());
+            newStudent.setEmail(registrationDTO.getEmail());
+            String name = fileStorageService.storeFile(file);
+            newStudent.setPersonalPic(name);
+            student_repository.save(newStudent);
+
+        } catch (Exception ex) {
         }
-
-        if (student_repository.findByNId(registrationDTO.getnId()).isPresent()) {
-            throw new IllegalArgumentException("Student with this National ID already exists.");
-        }
-
-        if (student_repository.findByEmail(registrationDTO.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Student with this email already exists.");
-        }
-
-        User newUser = new User();
-        newUser.setUsername(registrationDTO.getEmail());
-        newUser.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
-        newUser.setRole("ROLE_STUDENT");
-        user_repository.save(newUser);
-
-        Student newStudent = new Student();
-        newStudent.setName(registrationDTO.getName());
-        newStudent.setLevel(registrationDTO.getLevel());
-        newStudent.setNID(registrationDTO.getnId());
-        newStudent.setEmail(registrationDTO.getEmail());
-        student_repository.save(newStudent);
-
-        return newStudent;
     }
 
 
@@ -70,7 +79,6 @@ public class studentService {
         return student_repository.findAll(pageable);
     }
 
-    @Transactional
     public Page<Student> viewStudent(String name, int page, int size, String sortby, String sortdirection) {
 
         Sort sort = Sort.by(sortdirection.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortby);
@@ -79,11 +87,20 @@ public class studentService {
     }
 
     @Transactional
-    public void updateStudentPersonalPic(Long studentId, String newPicFileName) {
-        Student student = student_repository.findByNId(studentId)
-                .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + studentId));
-        student.setPersonalPic(newPicFileName);
-        student_repository.save(student);
-    }
+    public void updateStudentPersonalPic(MultipartFile file, long studentId) {
+        try{
+            Student student = student_repository.findByNId(studentId)
+                    .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + studentId));
 
-}
+            String fileName = fileStorageService.storeFile(file);
+
+            student.setPersonalPic(fileName);
+            student_repository.save(student);
+        } catch (IOException ex) {
+
+        } catch (Exception ex) {
+
+        }
+        }
+
+    }

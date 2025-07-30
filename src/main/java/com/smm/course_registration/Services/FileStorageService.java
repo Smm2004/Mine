@@ -20,7 +20,6 @@ public class FileStorageService {
 
     private final Path fileStorageLocation;
 
-    // Inject the upload directory from application.properties
     public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
         try {
@@ -72,11 +71,6 @@ public class FileStorageService {
         return this.fileStorageLocation.resolve(filename).normalize();
     }
 
-    /**
-     * Deletes a file from storage.
-     * @param filename The unique filename of the stored file.
-     * @return true if deletion was successful, false otherwise.
-     */
     public boolean deleteFile(String filename) {
         try {
             Path filePath = this.fileStorageLocation.resolve(filename).normalize();

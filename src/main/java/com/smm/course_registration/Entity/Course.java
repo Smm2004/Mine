@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.smm.course_registration.Entity.audit.Auditable;
+import com.smm.course_registration.Enum.CourseStatus;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,7 +21,7 @@ public class Course extends Auditable {
     private LocalDate endDate;
     private String courseType;
     private String instructorName;
-    private String status;
+    private CourseStatus status;
     /** Course can be:
      *	1. Open
      *	2. Deleted
@@ -31,10 +32,10 @@ public class Course extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long courseId;
 
-    @ManyToMany(mappedBy = "courses",fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JsonBackReference("course-students")
     @JsonIgnore
-    private List<Student> students =  new ArrayList<>();
+    private List<Student> students= new ArrayList<>();
 
 
     public Course(){};
@@ -91,30 +92,45 @@ public class Course extends Auditable {
     public void setAutoStatus(){
         LocalDate today = LocalDate.now();
         if(today.isAfter(startDate)){
-            this.status = "Closed";
+            this.status = CourseStatus.CLOSED;
         }
 
     }
     public void setStatus(String status){
-        this.status = status;
+        switch (status.toUpperCase()){
+            case "OPEN":
+                this.status = CourseStatus.OPEN;
+                break;
+            case "CLOSED":
+                this.status = CourseStatus.CLOSED;
+                break;
+            case "DELETED":
+                this.status = CourseStatus.DELETED;
+                break;
+        }
     }
     public String getStatus(){
-        return status;
+        switch (status){
+            case OPEN:
+                return "OPEN";
+            case CLOSED:
+                return "CLOSED";
+            case DELETED:
+                return "DELETED";
+        }
+        return "Not found";
     }
 
     public void addStudent(Student student){
-        if (!this.students.contains(student)) {
-            this.students.add(student);
+        if (!(students.contains(student))) {
+            students.add(student);
         }
     }
     public List<Student> getStudents(){
         return students;
     }
 
-    public int getStudentCount(){
-        if(students == null)
-            return 0;
-
+    public long getStudentCount(){
         return students.size();
     }
 }

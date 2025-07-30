@@ -49,7 +49,4 @@ public class User extends Auditable {
     public void setRole(String role){
         this.role = role;
     }
-
-
-
 }

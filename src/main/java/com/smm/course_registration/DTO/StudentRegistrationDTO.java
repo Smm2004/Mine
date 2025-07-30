@@ -3,6 +3,7 @@ package com.smm.course_registration.DTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 public class StudentRegistrationDTO {
 
@@ -21,6 +22,7 @@ public class StudentRegistrationDTO {
 
     @NotBlank(message = "level cannot be blank")
     private String level;
+
 
     public String getEmail() {
         return email;
@@ -56,4 +58,5 @@ public class StudentRegistrationDTO {
     public void setLevel(String level) {
         this.level = level;
     }
+
 }

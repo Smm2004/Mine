@@ -40,8 +40,7 @@ public class Student extends Auditable {
         this.level = Level;
     }
 
-    public void setNID(Long id){this.nId = id;
-    }
+    public void setNID(Long id){this.nId = id;}
     public Long getNID(){
         return nId;
     }
@@ -84,7 +83,7 @@ public class Student extends Auditable {
         }
 
         return (int) this.courses.stream()
-                .filter(course -> course.getStatus() != null && "open".equals(course.getStatus()))
+                .filter(course -> course.getStatus() != null && "OPEN".equals(course.getStatus()))
                 .count();
     }
 

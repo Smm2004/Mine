@@ -9,9 +9,11 @@ import com.smm.course_registration.Repository.studentRepository;
 import com.smm.course_registration.Repository.userRepository;
 import com.smm.course_registration.Services.courseService;
 import com.smm.course_registration.Services.emailService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +39,7 @@ public class courseController {
         this.user_repository = user_repository;
     }
 
+    @Operation(summary = "Page for defining a course, only admins can access")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/define")
     public ResponseEntity<String> Define(@RequestBody Course course) {
@@ -50,19 +53,25 @@ public class courseController {
         }
     }
 
+    @Operation(summary = "Page for veiwing open courses available for registration")
     @PreAuthorize("hasAnyRole('ADMIN','STUDENT')")
     @GetMapping("/viewall")
-    public List<Course> ViewAll() {
-        return courseservice.viewCourses();
+    public ResponseEntity<Page<Course>> ViewAll(@RequestParam(defaultValue = "0") int pagenum,
+                                      @RequestParam(defaultValue = "10") int size,
+                                      @RequestParam(defaultValue = "courseId") String sortby,
+                                      @RequestParam(defaultValue = "asc") String sortdirection) {
+        Page page = courseservice.viewCourses(pagenum, size, sortby, sortdirection);
+        return new ResponseEntity<>(page, HttpStatus.OK);
     }
 
-
+    @Operation(summary = "Page to view a specific course using id and name")
     @PreAuthorize("hasAnyRole('ADMIN','STUDENT')")
     @GetMapping("/viewidandname")
     public Course ViewIDandName(@RequestParam String name, @RequestParam long id) {
         return courseservice.viewCourse(id, name);
     }
 
+    @Operation(summary = "Page for students to register for a course")
     @PreAuthorize("hasRole('STUDENT')")
     @PostMapping("/register")
     public ResponseEntity<String> Register(@RequestBody CourseRegistrationDTO dto) {
@@ -91,10 +100,10 @@ public class courseController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Page to delete a course that no one has signed up for, only available for admins")
+   @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/soft-delete")
     public void Soft_Delete(@RequestParam long id, @RequestParam String name) {
         courseservice.softDeleteCourse(id, name);
     }
-
 }
