@@ -2,12 +2,12 @@ package com.smm.course_registration.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.smm.course_registration.Entity.Student;
+import jakarta.validation.constraints.NotBlank;
 
 public class CourseRegistrationDTO {
 
+    @NotBlank(message = "Please input course id")
     private long id;
-    @JsonProperty("nId")
-    private long nId;
 
 
     public long getId() {
@@ -18,11 +18,5 @@ public class CourseRegistrationDTO {
         this.id = id;
     }
 
-    public long getNId() {
-        return nId;
-    }
-
-    public void setNId(long id) {this.nId = id;
-    }
 
 }

@@ -23,7 +23,6 @@ public class StudentRegistrationDTO {
     @NotBlank(message = "level cannot be blank")
     private String level;
 
-
     public String getEmail() {
         return email;
     }

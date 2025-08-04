@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -68,14 +69,15 @@ public class studentController {
     }
 
     @Operation(summary = "Update student profile pic")
-    @PutMapping("/{studentId}/update-pic")
+    @PutMapping("/update-pic")
     @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
-    public ResponseEntity<?> updateStudentProfilePic(@PathVariable Long studentId, @RequestParam("file") MultipartFile file) {
-            if (!file.getContentType().startsWith("image/")) {
-                return ResponseEntity.badRequest().body("Only image files are allowed.");
-            }
-            studentservice.updateStudentPersonalPic(file, studentId);
-            return ResponseEntity.ok("Student " + studentId + " profile picture updated successfully.");
+    public ResponseEntity<?> updateStudentProfilePic(@RequestParam("file") MultipartFile file) {
+        if (!file.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body("Only image files are allowed.");
+        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        studentservice.updateStudentPersonalPic(file, authentication.getName());
+        return ResponseEntity.ok("Student " + authentication.getName() + " profile picture updated successfully.");
 
     }
 }

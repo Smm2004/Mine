@@ -84,16 +84,16 @@ public class courseService {
     }
 
     @Transactional
-    public void softDeleteCourse(long id, String name) {
-        Course course = course_repository.findByCourseIdAndCourseName(id, name);
+    public void softDeleteCourse(long id) {
+        Course course = course_repository.findByCourseId(id);
         if (course == null) {
-            throw new CourseNotFound("Course: " + name + "not found");
+            throw new CourseNotFound("Course: " + "not found");
         }
         if (course.getStudentCount() == 0) {
             course.setStatus("DELETED");
             course_repository.save(course);
         } else if (course.getStudentCount() > 0) {
-            throw new CourseNotFound(name + " has students registered");
+            throw new CourseNotFound("has students registered");
         }
     }
 

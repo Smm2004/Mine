@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
@@ -76,16 +78,18 @@ public class courseController {
     @PostMapping("/register")
     public ResponseEntity<String> Register(@RequestBody CourseRegistrationDTO dto) {
         try {
-            Optional<Student> studentOptional = student_repository.findByNId(dto.getNId());
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            Optional<Student> studentOptional = student_repository.findByEmail(authentication.getName());
 
             if (studentOptional.isEmpty()) {
-                throw new IllegalArgumentException("Student with NID " + dto.getNId() + " not found.");
+                throw new IllegalArgumentException("Student with NID " + " not found.");
             }
             Student student = studentOptional.get();
-            courseservice.registerForCourse(dto.getId(), dto.getNId());
-            Student studentForEmail = courseservice.getStudentByNId(dto.getNId());
+            courseservice.registerForCourse(dto.getId(), student.getNID());
+            Student studentForEmail = courseservice.getStudentByNId(student.getNID());
             emailservice.SendEmail(dto.getId(), studentForEmail);
-            return new ResponseEntity<>("Course registration successful for student NID " + dto.getNId()  + "!", HttpStatus.OK);
+            return new ResponseEntity<>("Course registration successful for student NID " + student.getNID()  + "!", HttpStatus.OK);
 
         } catch (CourseNotFound e) {
             // If the course isn't found, return 404 Not Found
@@ -103,7 +107,7 @@ public class courseController {
     @Operation(summary = "Page to delete a course that no one has signed up for, only available for admins")
    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/soft-delete")
-    public void Soft_Delete(@RequestParam long id, @RequestParam String name) {
-        courseservice.softDeleteCourse(id, name);
+    public void Soft_Delete(@RequestParam long id) {
+        courseservice.softDeleteCourse(id);
     }
 }

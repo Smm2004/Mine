@@ -3,24 +3,20 @@ package com.smm.course_registration.Services;
 import com.smm.course_registration.DTO.StudentRegistrationDTO;
 import com.smm.course_registration.Entity.Student;
 import com.smm.course_registration.Entity.User;
-import com.smm.course_registration.GlobalHandler.StudentNotFound;
 import com.smm.course_registration.Repository.studentRepository;
 import com.smm.course_registration.Repository.userRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.hibernate.query.SortDirection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.logging.ErrorManager;
+
 
 
 @Service
@@ -87,10 +83,10 @@ public class studentService {
     }
 
     @Transactional
-    public void updateStudentPersonalPic(MultipartFile file, long studentId) {
+    public void updateStudentPersonalPic(MultipartFile file, String email) {
         try{
-            Student student = student_repository.findByNId(studentId)
-                    .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + studentId));
+            Student student = student_repository.findByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Student not found with ID: " + email));
 
             String fileName = fileStorageService.storeFile(file);
 
